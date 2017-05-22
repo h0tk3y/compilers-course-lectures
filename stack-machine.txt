@@ -1,0 +1,22 @@
+Если мы хотим сделать компиляцию в x86, то логично было бы сделать промежуточное представление в стековой машине.
+
+Операции:
+    read | write | push int | ld string | st string | binop ... | nop
+    Операции работают с вершиной стека.
+
+Конфигурация машины:
+    (int -> String) x [int] x [int] x [int] x [statement] x instruction_ptr
+                      input   output  stack 
+
+От нас требуется архитектура компилятора:
+
+    high-level language 
+     (with interpreter)
+            | (compiler into)
+            v
+    stack machine model 
+     (with interpreter)
+            | (compiler into)
+            v
+       x86 assembly 
+    (no interpreter needed, we have already got hardware ones)

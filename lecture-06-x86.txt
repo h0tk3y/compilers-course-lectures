@@ -1,0 +1,61 @@
+Немного об x86-ассемблере
+
+    .text
+    .comm x, 4, 4
+    .globl main
+
+main:
+    call read
+    pushl %eax
+    call write
+    popl %eax
+    xorl %eax, %eax
+    ret
+
+GAS -- gcc assembly with AT%T syntax (result to the right operand)
+
+Мы будем использовать 32-битный ассемблер (так проще), и поэтому рантайм нужно тоже собирать под него:
+    gcc -m32 -c runtime.c
+
+Как собирать ассемблер (a.S):
+    gcc -m32 runtime/runtime.o a.S
+
+Теперь поиграем в компилятор:
+
+--исходник
+
+seq [
+    read "x";
+    write (bop (var "x") "+" (const 1))
+    skip;
+    read "y";
+    write (bop (var "x") "+" (var "y"))
+]
+
+-- результат (возможно, этот не работает)
+
+.text
+.comm x, 4, 4 
+.comm y, 4, 4
+.globl main
+    call read
+    movl %eax, x
+
+    movl x, %eax
+    addl $1, %eax // use $ before consts
+    pushl %eax
+    call write
+    popl %eax
+
+    nop
+
+    call read
+    movl %eax, y
+
+    movl y, %eax
+    addl x, %eax // use $ before consts
+    pushl %eax
+    call write
+    popl %eax
+
+    xorl
